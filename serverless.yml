@@ -1,0 +1,98 @@
+service:
+  name: musicathon
+
+plugins:
+  - serverless-webpack
+  - serverless-dynamodb-local
+  - serverless-offline
+
+provider:
+  name: aws
+  runtime: nodejs8.10
+  environment:
+    DYNAMODB_TABLE: ${self:service}-${opt:stage, self:provider.stage}
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - dynamodb:Query
+        - dynamodb:Scan
+        - dynamodb:GetItem
+        - dynamodb:PutItem
+        - dynamodb:UpdateItem
+        - dynamodb:DeleteItem
+      Resource: "arn:aws:dynamodb:${opt:region, self:provider.region}:*:table/${self:provider.environment.DYNAMODB_TABLE}"
+
+functions:
+  createUser:
+    handler: users.create
+    events:
+      - http:
+          path: users
+          method: post
+          cors: true
+      - cloudwatchLog: '/users'
+
+  loginUser:
+    handler: users.login
+    events:
+      - http:
+          path: users/login
+          method: post
+          cors: true
+      - cloudwatchLog: '/users/login'
+
+  createUpload:
+    handler: uploads.create
+    events:
+      - http:
+          path: uploads
+          method: post
+          cors: true
+      - cloudwatchLog: '/uploads'
+
+  getUpload:
+    handler: uploads.get
+    events:
+      - http:
+          path: upload/{id}
+          method: get
+          cors: true
+      - cloudwatchLog: '/uploads/id'
+
+  getUploads:
+    handler: uploads.list
+    events:
+      - http:
+          path: uploads
+          method: get
+          cors: true
+      - cloudwatchLog: '/uploads/list'
+
+resources:
+  Resources:
+    usersTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: usersTable-${opt:stage, self:provider.stage}
+        AttributeDefinitions:
+          - AttributeName: email
+            AttributeType: S
+        KeySchema:
+          - AttributeName: email
+            KeyType: HASH
+        ProvisionedThroughput:
+          ReadCapacityUnits: 1
+          WriteCapacityUnits: 1
+    uploadsTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: uploadsTable-${opt:stage, self:provider.stage}
+        AttributeDefinitions:
+          - AttributeName: id
+            AttributeType: S
+        KeySchema:
+          - AttributeName: id
+            KeyType: HASH
+        ProvisionedThroughput:
+          ReadCapacityUnits: 1
+          WriteCapacityUnits: 1
