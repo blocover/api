@@ -37,7 +37,7 @@ functions:
     handler: users.login
     events:
       - http:
-          path: users/login
+          path: users/login?username={username}&password={password}
           method: post
           cors: true
 

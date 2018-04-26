@@ -1,6 +1,6 @@
 import { DynamoDB } from 'aws-sdk';
 
-console.log(process.env);
+//console.log(process.env);
 
 let dynamoConfig = {
   sessionToken: process.env.AWS_SESSION_TOKEN,

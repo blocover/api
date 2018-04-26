@@ -18,7 +18,7 @@ export const create: Handler = async (event: APIGatewayEvent, context: Context, 
     },
   };
 
-  // write the todo to the database
+  // write the upload to the database
   try {
     let upload = await db.put(params);
 
@@ -41,7 +41,6 @@ export const create: Handler = async (event: APIGatewayEvent, context: Context, 
 export const list: Handler = (event: APIGatewayEvent, context: Context, cb: Callback) => {
   let uploads = [];
   // TODO: get from db
-
   const response = {
     statusCode: 200,
     body: JSON.stringify({
