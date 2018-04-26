@@ -11,6 +11,8 @@ provider:
   runtime: nodejs8.10
   environment:
     DYNAMODB_TABLE: ${self:service}-${opt:stage, self:provider.stage}
+    USERS_TABLE: usersTable-${opt:stage, self:provider.stage}
+    UPLOADS_TABLE: uploadsTable-${opt:stage, self:provider.stage}
   iamRoleStatements:
     - Effect: Allow
       Action:
@@ -30,7 +32,6 @@ functions:
           path: users
           method: post
           cors: true
-      - cloudwatchLog: '/users'
 
   loginUser:
     handler: users.login
@@ -39,7 +40,6 @@ functions:
           path: users/login
           method: post
           cors: true
-      - cloudwatchLog: '/users/login'
 
   createUpload:
     handler: uploads.create
@@ -48,7 +48,6 @@ functions:
           path: uploads
           method: post
           cors: true
-      - cloudwatchLog: '/uploads'
 
   getUpload:
     handler: uploads.get
@@ -57,7 +56,6 @@ functions:
           path: upload/{id}
           method: get
           cors: true
-      - cloudwatchLog: '/uploads/id'
 
   getUploads:
     handler: uploads.list
@@ -66,14 +64,13 @@ functions:
           path: uploads
           method: get
           cors: true
-      - cloudwatchLog: '/uploads/list'
 
 resources:
   Resources:
     usersTable:
       Type: AWS::DynamoDB::Table
       Properties:
-        TableName: usersTable-${opt:stage, self:provider.stage}
+        TableName: self:provider.environment.USERS_TABLE
         AttributeDefinitions:
           - AttributeName: email
             AttributeType: S
@@ -86,7 +83,7 @@ resources:
     uploadsTable:
       Type: AWS::DynamoDB::Table
       Properties:
-        TableName: uploadsTable-${opt:stage, self:provider.stage}
+        TableName: self:provider.environment.UPLOADS_TABLE
         AttributeDefinitions:
           - AttributeName: id
             AttributeType: S

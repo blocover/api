@@ -7,7 +7,7 @@ export const create: Handler = async (event: APIGatewayEvent, context: Context, 
 
   const timestamp = new Date().getTime();
   let params = {
-    TableName: 'uploadsTable-dev',
+    TableName: process.env.UPLOADS_TABLE,
     Item: {
       id: uuid.v1(),
       title: uploadInput.title,
