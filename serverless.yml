@@ -70,7 +70,7 @@ resources:
     usersTable:
       Type: AWS::DynamoDB::Table
       Properties:
-        TableName: self:provider.environment.USERS_TABLE
+        TableName: ${self:provider.environment.USERS_TABLE}
         AttributeDefinitions:
           - AttributeName: email
             AttributeType: S
@@ -83,7 +83,7 @@ resources:
     uploadsTable:
       Type: AWS::DynamoDB::Table
       Properties:
-        TableName: self:provider.environment.UPLOADS_TABLE
+        TableName: ${self:provider.environment.UPLOADS_TABLE}
         AttributeDefinitions:
           - AttributeName: id
             AttributeType: S
