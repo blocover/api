@@ -1,35 +1,23 @@
 import { APIGatewayEvent, Callback, Context, Handler } from 'aws-lambda';
 import * as uuid from 'uuid';
 import * as JWT from 'jsonwebtoken';
-import { Upload } from './db';
+import { Upload, User } from './db';
 import { DynamoDBStreams } from 'aws-sdk';
 
 export const create: Handler = async (event: APIGatewayEvent, context: Context, cb: Callback) => {
   let uploadInput = JSON.parse(event.body);
 
-  const timestamp = new Date().getTime();
-  let params = {
-    TableName: process.env.UPLOADS_TABLE,
-    Item: {
-      id: uuid.v1(),
-      title: uploadInput.title,
-      genre: uploadInput.genre,
-      hash: uploadInput.hash,
-      createdAt: timestamp,
-      updatedAt: timestamp,
-    },
-  };
-
   // write the upload to the database
   try {
     let authHeader = event.headers['Authorization'].replace('Bearer ', '');
     let authToken = JWT.verify(authHeader.replace('Bearer ', ''), 'super_secret');
-    
+
     let uploadToCreate = {
       owner: authToken.id,
       title: uploadInput.title,
       genre: uploadInput.genre,
       hash: uploadInput.hash,
+      cover: uploadInput.cover
     }
 
     let dbCall = await Upload.createAsync(uploadToCreate);
@@ -54,15 +42,23 @@ export const create: Handler = async (event: APIGatewayEvent, context: Context, 
 export const list: Handler = async (event: APIGatewayEvent, context: Context, cb: Callback) => {
   try {
     let dbCall = await Upload.scan().loadAll().execAsync();
-    let uploads = dbCall.Items.map((item) => item.get());
-    console.log(uploads);
-    
-    const response = {
-      statusCode: 200,
-      body: JSON.stringify(uploads),
-    };
+    let uploads = dbCall.Items.map(async item => {
+      var upload = item.get();
+      let dbCall = await User.scan().where('id').gte(upload.owner).execAsync();
+      upload.artist = dbCall.Items[0].get();
+      delete upload.owner;
+      return upload;
+    });
 
-    cb(null, response);
+    await Promise.all(uploads)
+      .then((completed) => {
+        const response = {
+          statusCode: 200,
+          body: JSON.stringify(completed),
+        };
+
+        cb(null, response);
+    });
   } catch(error) {
     console.log(error);
     cb(null, {

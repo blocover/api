@@ -39,6 +39,7 @@ let Upload = dynogels.define('Upload', {
     title: Joi.string(),
     genre: Joi.string(),
     hash: Joi.string(),
+    cover: Joi.string(),
   },
 });
 
