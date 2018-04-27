@@ -19,14 +19,14 @@ export const create: Handler = async (event: APIGatewayEvent, context: Context, 
 
     delete dbUser.password;
 
-    cb(null, { statusCode: 201, body: dbUser });
+    cb(null, { statusCode: 201, body: JSON.stringify(dbUser) });
   } catch (error) {
     console.log(error);
-    cb(null, {
+    cb(null, JSON.stringify({
       statusCode: 501,
       headers: { 'Content-Type': 'text/plain' },
       body: 'Couldn\'t create user - ask the admin!',
-    });
+    }));
   }
 }
 
@@ -53,10 +53,10 @@ export const login: Handler = async (event: APIGatewayEvent, context: Context, c
       email: dbUser.email
     };
 
-    cb(null, { statusCode: 201, body: { token: `Bearer ${signUser(tokenPayload)}` } });
+    // cb(null, { statusCode: 201, body: JSON.stringify({ token: `Bearer ${signUser(tokenPayload)}` })} );
   } catch (error) {
     console.log(error);
-    cb(null, { statusCode: 500, body: "Something went wrong" });
+    cb(null, JSON.stringify({ statusCode: 500, body: "Something went wrong" }));
   }
 };
 
