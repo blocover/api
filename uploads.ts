@@ -55,6 +55,10 @@ export const list: Handler = async (event: APIGatewayEvent, context: Context, cb
         const response = {
           statusCode: 200,
           body: JSON.stringify(completed),
+          headers: {
+            "Access-Control-Allow-Origin" : "*", // Required for CORS support to work
+            "Access-Control-Allow-Credentials" : true // Required for cookies, authorization headers with HTTPS
+          },
         };
 
         cb(null, response);

@@ -49,7 +49,9 @@ functions:
       - http:
           path: users
           method: post
-          cors: true
+          cors:
+            origin: '*'
+            maxAge: 86400
 
   loginUser:
     handler: users.login
@@ -57,7 +59,9 @@ functions:
       - http:
           path: users/login
           method: post
-          cors: true
+          cors:
+            origin: '*'
+            maxAge: 86400
 
   createUpload:
     handler: uploads.create
@@ -65,7 +69,9 @@ functions:
       - http:
           path: uploads
           method: post
-          cors: true
+          cors:
+            origin: '*'
+            maxAge: 86400
 
   getUpload:
     handler: uploads.get
@@ -73,7 +79,9 @@ functions:
       - http:
           path: uploads/{id}
           method: get
-          cors: true
+          cors:
+            origin: '*'
+            maxAge: 86400
 
   getUploads:
     handler: uploads.list
@@ -81,7 +89,9 @@ functions:
       - http:
           path: uploads
           method: get
-          cors: true
+          cors:
+            origin: '*'
+            maxAge: 86400
 
 resources:
   Resources:
