@@ -19,9 +19,11 @@
   "author": "The serverless webpack authors (https://github.com/elastic-coders/serverless-webpack)",
   "license": "MIT",
   "dependencies": {
+    "bcryptjs": "^2.0.1",
     "dynogels": "^9.0.0",
     "dynogels-promisified": "^1.0.4",
     "joi": "^13.2.0",
+    "jsonwebtoken": "^8.2.1",
     "multipart-raw-parser": "^0.6.2",
     "parse-multipart": "^1.0.4"
   }

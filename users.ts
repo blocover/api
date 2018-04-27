@@ -1,21 +1,25 @@
 import { APIGatewayEvent, Callback, Context, Handler } from 'aws-lambda';
-import { createHash } from 'crypto';
-let db = require('./db').db;
+import * as bcrypt from 'bcryptjs';
+import { User } from './db';
+import * as JWT from 'jsonwebtoken';
+import * as dynogels from 'dynogels-promisified';
 
 export const create: Handler = async (event: APIGatewayEvent, context: Context, cb: Callback) => {
   let user = JSON.parse(event.body)
-  user.password = createHash(user.password);
-  // TODO: request user.blockchainPrivateKey from Blockchain 
-  user.blockchainPrivateKey = createHash(user.username);
+  
+  const salt = bcrypt.genSaltSync(10);
+  user.password = bcrypt.hashSync(user.password, salt);
+
+  // TODO: request user.blockchainPrivateKey from Blockchain
+  // user.blockchainPrivateKey = createHash(user.username);
 
   try {
-    let dbuser = await db.set({TableName : process.env.USERS_TABLE, Key: user});
-    delete user.password;
-    const response = {
-      statusCode: 201,
-      body: JSON.stringify( { user }),
-    };
-    cb(null, response);
+    let dbCall = await User.createAsync(user);
+    let dbUser = dbCall.get();
+
+    delete dbUser.password;
+
+    cb(null, { statusCode: 201, body: dbUser });
   } catch (error) {
     console.log(error);
     cb(null, {
@@ -27,27 +31,36 @@ export const create: Handler = async (event: APIGatewayEvent, context: Context, 
 }
 
 export const login: Handler = async (event: APIGatewayEvent, context: Context, cb: Callback) => {
-  console.log(event.body);
   let user = JSON.parse(event.body)
 
   try {
-    let dbuser = await db.get({TableName : process.env.USERS_TABLE, Key: {username: user.username, password: user.password}});
-    delete user.password;
-    delete dbuser.password;
-    const response = {
-      statusCode: 201,
-      body: JSON.stringify( {
-        user: dbuser,
-        token: createHash(dbuser.username + dbuser.password).toString(),
-      }),
+    let dbCall = await User.getAsync(user.email);
+    let dbUser = dbCall.get();
+
+    if (!dbUser || bcrypt.compareSync(user.password, dbUser.password) == false) {
+      const response = {
+        statusCode: 401,
+        body: JSON.stringify( {
+          error: "Unauthorized"
+        }),
+      };
+      cb(null, response);
+      return;
+    }
+
+    const tokenPayload = {
+      id: dbUser.id,
+      email: dbUser.email
     };
-    cb(null, response);
+
+    cb(null, { statusCode: 201, body: { token: `Bearer ${signUser(tokenPayload)}` } });
   } catch (error) {
     console.log(error);
-      cb(null, {
-        statusCode: 501,
-        headers: { 'Content-Type': 'text/plain' },
-        body: 'Couldn\'t login! Please check usrname/password.',
-      });
+    cb(null, { statusCode: 500, body: "Something went wrong" });
   }
 };
+
+function signUser(user) {
+  const token = JWT.sign(user, 'super_secret', { expiresIn: '28d' });
+  return token;
+}

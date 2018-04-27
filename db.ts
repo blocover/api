@@ -1,4 +1,6 @@
 import { DynamoDB } from 'aws-sdk';
+import * as dynogels from 'dynogels-promisified';
+import * as Joi from 'joi';
 
 //console.log(process.env);
 
@@ -13,5 +15,18 @@ if (process.env.IS_OFFLINE) {
   dynamoConfig['sessionToken'] = 'BLaaaaaa';
 }
 
-let db = new DynamoDB.DocumentClient(dynamoConfig);
-export { db };
+dynogels.AWS.config.update(dynamoConfig);
+
+let User = dynogels.define('User', {
+  tableName: process.env.USERS_TABLE,
+  hashKey: 'email',
+  timestamps : true,
+  schema : {
+    id: dynogels.types.uuid(),
+    name: Joi.string(),
+    email: Joi.string(),
+    password: Joi.string(),
+  },
+});
+
+export { dynamoConfig, User };

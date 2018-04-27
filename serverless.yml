@@ -37,7 +37,7 @@ functions:
     handler: users.login
     events:
       - http:
-          path: users/login?username={username}&password={password}
+          path: users/login
           method: post
           cors: true
 
@@ -93,3 +93,10 @@ resources:
         ProvisionedThroughput:
           ReadCapacityUnits: 1
           WriteCapacityUnits: 1
+
+custom:
+  dynamodb:
+    start:
+      port: 8000
+      inMemory: true
+      migrate: true
