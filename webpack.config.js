@@ -22,6 +22,7 @@ module.exports = {
   module: {
     loaders: [
       { test: /\.ts(x?)$/, loader: 'ts-loader' },
+      { test: /\.sol$/, loaders: ['web3', 'solc'] }
     ],
   },
 };

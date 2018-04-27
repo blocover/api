@@ -8,23 +8,30 @@
   },
   "devDependencies": {
     "@types/aws-lambda": "0.0.22",
-    "@types/node": "^8.0.57",
+    "@types/bs58": "^3.0.30",
+    "@types/node": "^8.10.10",
     "serverless-dynamodb-local": "^0.2.28",
     "serverless-offline": "^3.20.3",
     "serverless-webpack": "^4.0.0",
     "ts-loader": "^2.3.7",
     "typescript": "^2.5.2",
+    "web3-loader": "^1.1.2",
     "webpack": "^3.6.0"
   },
   "author": "The serverless webpack authors (https://github.com/elastic-coders/serverless-webpack)",
   "license": "MIT",
   "dependencies": {
     "bcryptjs": "^2.0.1",
+    "bs58": "^4.0.1",
     "dynogels": "^9.0.0",
     "dynogels-promisified": "^1.0.4",
+    "fs-ext": "^1.0.0",
+    "ipfs": "^0.28.2",
     "joi": "^13.2.0",
     "jsonwebtoken": "^8.2.1",
     "multipart-raw-parser": "^0.6.2",
-    "parse-multipart": "^1.0.4"
+    "parse-multipart": "^1.0.4",
+    "truffle-contract": "^3.0.3",
+    "web3": "1.0.0-beta.32"
   }
 }

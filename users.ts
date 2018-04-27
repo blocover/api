@@ -3,6 +3,7 @@ import * as bcrypt from 'bcryptjs';
 import { User } from './db';
 import * as JWT from 'jsonwebtoken';
 import * as dynogels from 'dynogels-promisified';
+import { registerUser } from './blockchain';
 
 export const create: Handler = async (event: APIGatewayEvent, context: Context, cb: Callback) => {
   let user = JSON.parse(event.body)
@@ -19,7 +20,14 @@ export const create: Handler = async (event: APIGatewayEvent, context: Context, 
 
     delete dbUser.password;
 
-    cb(null, { statusCode: 201, body: JSON.stringify(dbUser) });
+    let blockchainUser = await registerUser({ id: dbUser.id, artistName: user.name });
+    console.log(blockchainUser);
+
+    dbUser.blockchainAddress = blockchainUser.type;
+    let updateCall = await User.updateAsync(dbUser);
+    let updatedDBUser = updateCall.get()
+
+    cb(null, { statusCode: 201, body: JSON.stringify(updatedDBUser) });
   } catch (error) {
     console.log(error);
     cb(null, JSON.stringify({
