@@ -53,7 +53,7 @@ export const login: Handler = async (event: APIGatewayEvent, context: Context, c
       email: dbUser.email
     };
 
-    // cb(null, { statusCode: 201, body: JSON.stringify({ token: `Bearer ${signUser(tokenPayload)}` })} );
+    cb(null, { statusCode: 201, body: JSON.stringify({ token: `Bearer ${signUser(tokenPayload)}` })} );
   } catch (error) {
     console.log(error);
     cb(null, JSON.stringify({ statusCode: 500, body: "Something went wrong" }));
