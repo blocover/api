@@ -29,4 +29,17 @@ let User = dynogels.define('User', {
   },
 });
 
-export { dynamoConfig, User };
+let Upload = dynogels.define('Upload', {
+  tableName: process.env.UPLOADS_TABLE,
+  hashKey: 'id',
+  timestamps : true,
+  schema : {
+    id: dynogels.types.uuid(),
+    owner: Joi.string(),
+    title: Joi.string(),
+    genre: Joi.string(),
+    hash: Joi.string(),
+  },
+});
+
+export { dynamoConfig, User, Upload };

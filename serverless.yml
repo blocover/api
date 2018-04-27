@@ -71,7 +71,7 @@ functions:
     handler: uploads.get
     events:
       - http:
-          path: upload/{id}
+          path: uploads/{id}
           method: get
           cors: true
 
